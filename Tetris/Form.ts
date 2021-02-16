@@ -5,7 +5,6 @@ namespace Tetris {
         public unit: number = 1.05;
 
         private dirY: ƒ.Vector3 = ƒ.Vector3.Y(-this.unit);
-        //private dirX: ƒ.Vector3 = ƒ.Vector3.X();
         private color: ƒ.Color = ƒ.Color.CSS("WHITE");
 
         constructor() {
@@ -13,13 +12,21 @@ namespace Tetris {
             this.addComponent(new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(ƒ.Vector3.ZERO())));
         }
 
-        public move(): void {
+        public moveY(): void {
             let transform: ƒ.ComponentTransform = this.getComponent(ƒ.ComponentTransform);
             let matrix: ƒ.Matrix4x4 = transform.local.copy;
             matrix.translate(this.dirY);
             this.removeComponent(transform);
             this.addComponent(new ƒ.ComponentTransform(matrix));
+        }
 
+        public moveX(dirX: ƒ.Vector3): void {
+            dirX.scale(this.unit);
+            let transform: ƒ.ComponentTransform = this.getComponent(ƒ.ComponentTransform);
+            let matrix: ƒ.Matrix4x4 = transform.local.copy;
+            matrix.translate(dirX);
+            this.removeComponent(transform);
+            this.addComponent(new ƒ.ComponentTransform(matrix));
         }
 
         public createLN(pos: ƒ.Vector3 = ƒ.Vector3.ZERO()): void {
