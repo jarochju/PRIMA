@@ -3,58 +3,65 @@ namespace Tetris {
 
   window.addEventListener("load", hndLoad);
   export let viewport: ƒ.Viewport;
-  let form: Form;
+  let graph: ƒ.Node;
+  let activeForm: Form;
+  let colliders: Form[] = [];
 
   function hndLoad(_event: Event): void {
     const canvas: HTMLCanvasElement = document.querySelector("canvas");
 
-    form = new Form();
-    let r: number = Math.random();
-    let p: number = 1 / 7;
-    let rx: number = Math.floor(Math.random() * 14) - 7;
-    let y: number = 10;
-    let pos: ƒ.Vector3 = new ƒ.Vector3(rx * form.unit, y * form.unit, 0);
-    if (r > p * 6)
-      form.createLN(pos);
-    else if (r > p * 5)
-      form.createLL(pos);
-    else if (r > p * 4)
-      form.createLR(pos);
-    else if (r > p * 3)
-      form.createZL(pos);
-    else if (r > p * 2)
-      form.createZR(pos);
-    else if (r > p * 1)
-      form.createSQ(pos);
-    else if (r > p * 0)
-      form.createTT(pos);
+
+    graph = new ƒ.Node("Graph");
+    activeForm = Form.random();
+    let floor: Form = Form.floor(15, new ƒ.Vector3(-6, -11, 0));
+    let wallL: Form = Form.wall(23, new ƒ.Vector3(-8, -10, 0));
+    let wallR: Form = Form.wall(23, new ƒ.Vector3(8, -10, 0));
+
+    graph.appendChild(floor);
+    graph.appendChild(wallL);
+    graph.appendChild(wallR);
+    graph.appendChild(activeForm);
+
+    colliders.push(floor);
+    colliders.push(wallL);
+    colliders.push(wallR);
 
     let cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
     cmpCamera.pivot.translateZ(25);
     cmpCamera.pivot.rotateY(180);
 
     viewport = new ƒ.Viewport();
-    viewport.initialize("Viewport", form, cmpCamera, canvas);
+    viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
     document.addEventListener("keypress", control);
 
     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL, 1);
+    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL, 10);
   }
 
   function update(_event: ƒ.Eventƒ): void {
-    viewport.draw();
+    if (!activeForm.tryMoveY(colliders)) {
+      colliders.push(activeForm);
+      activeForm = Form.random();
+      graph.appendChild(activeForm);
+      viewport.setGraph(graph);
+    }
 
-    form.moveY();
+    viewport.draw();
   }
 
   function control(_event: Event): void {
     let direction: ƒ.Vector3;
-    
-    direction = ƒ.Keyboard.mapToValue(ƒ.Vector3.X(), ƒ.Vector3.ZERO(), ([ƒ.KEYBOARD_CODE.D, ƒ.KEYBOARD_CODE.ARROW_RIGHT]));
-    direction.add(ƒ.Keyboard.mapToValue(ƒ.Vector3.X(-1), ƒ.Vector3.ZERO(), [ƒ.KEYBOARD_CODE.A, ƒ.KEYBOARD_CODE.ARROW_LEFT]));
+    let rotation: number;
 
-    form.moveX(direction);
+    direction = ƒ.Keyboard.mapToValue(ƒ.Vector3.X(), ƒ.Vector3.ZERO(), ([ƒ.KEYBOARD_CODE.D]));
+    direction.add(ƒ.Keyboard.mapToValue(ƒ.Vector3.X(-1), ƒ.Vector3.ZERO(), [ƒ.KEYBOARD_CODE.A]));
+
+    rotation = ƒ.Keyboard.mapToValue(1, 0, ([ƒ.KEYBOARD_CODE.Q]));
+    rotation += (ƒ.Keyboard.mapToValue(-1, 0, [ƒ.KEYBOARD_CODE.E]));
+
+    activeForm.moveX(direction);
+    activeForm.rotateZ(rotation);
     viewport.draw();
   }
 }
