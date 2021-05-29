@@ -17,7 +17,7 @@ namespace Tetris {
         round: number;
     }
 
-    window.addEventListener('load', hndLoad);
+    window.addEventListener("load", hndLoad);
     export let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
     let activeShape: ActiveShape;
@@ -32,10 +32,10 @@ namespace Tetris {
 
     let level: Level;
     async function hndLoad(_event: Event): Promise<void> {
-        const canvas: HTMLCanvasElement = document.querySelector('canvas');
-        counterUI = new UIElement<number>('#counter');
+        const canvas: HTMLCanvasElement = document.querySelector("canvas");
+        counterUI = new UIElement<number>("#counter");
 
-        const storage = new Storage('./data.json');
+        const storage: Storage = new Storage("./data.json");
         await storage.loadData();
         const { gameInterval } = storage.getData();
         speed = gameInterval;
@@ -43,7 +43,7 @@ namespace Tetris {
         // setze Werte der Benutzeroberfläche
         counterUI.setValue(0);
         /*
-        counterUI.element.addEventListener('change', ((e: CustomEvent) => {
+        counterUI.element.addEventListener("change", ((e: CustomEvent) => {
             console.log(e.detail);
         }) as EventListener);
         */
@@ -52,7 +52,7 @@ namespace Tetris {
         createNewLevel();
 
         // erstelle Audio
-        bgMusic = new ƒ.Audio('sounds/tetrisMusic.mp3');
+        bgMusic = new ƒ.Audio("sounds/tetrisMusic.mp3");
         audioCmp = new ƒ.ComponentAudio(bgMusic, true, false);
         audioCmp.connect(true);
         audioCmp.volume = 0.8;
@@ -64,26 +64,26 @@ namespace Tetris {
 
         // erstelle Viewport und initialisiere Szene
         viewport = new ƒ.Viewport();
-        viewport.initialize('Viewport', graph, cmpCamera, canvas);
+        viewport.initialize("Viewport", graph, cmpCamera, canvas);
 
         // STARTE SPIEL
         // erstelle erste aktive Form
         setActiveShape();
 
         // setze input event listener
-        document.addEventListener('keypress', control);
+        document.addEventListener("keypress", control);
 
         // starte game loop
-        console.log('START GAME');
+        console.log("START GAME");
         ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL);
     }
 
-    function createNewLevel() {
+    function createNewLevel(): void {
         ƒ.Loop.stop();
 
         // erstelle Szenengraph (Wurzelknoten) wenn nötig
-        if (!graph) graph = new ƒ.Node('Graph');
+        if (!graph) graph = new ƒ.Node("Graph");
 
         // Lösche alle Kindknoten des Graphs
         graph.removeAllChildren();
@@ -94,7 +94,7 @@ namespace Tetris {
                 floor: Shape.floor(15, new ƒ.Vector3(-6, -11, 0)),
                 leftWall: Shape.wall(23, new ƒ.Vector3(-8, -10, 0)),
                 rightWall: Shape.wall(23, new ƒ.Vector3(8, -10, 0)),
-                round: 0,
+                round: 0
             };
         } else {
             level.round += 1;
@@ -112,14 +112,14 @@ namespace Tetris {
         colliders.push(level.rightWall);
     }
 
-    function setActiveShape(shape?: Shape) {
+    function setActiveShape(shape?: Shape): void {
         // erstelle Szenengraph (Wurzelknoten) wenn nötig
-        if (!graph) graph = new ƒ.Node('Graph');
+        if (!graph) graph = new ƒ.Node("Graph");
 
         // setze neue aktive Form
         activeShape = {
             form: shape || Shape.random(),
-            iteration: 0,
+            iteration: 0
         };
 
         // füge Form zum Szenengraph hinzu
@@ -128,7 +128,7 @@ namespace Tetris {
 
     function update(_event: ƒ.Eventƒ): void {
         // ermittle zeitlich Differenz zum letzten Update
-        const delta = Date.now() - lastUpdate;
+        const delta: number = Date.now() - lastUpdate;
 
         // teste of genug Zeit vergangen ist um das nächste Update zu starten
         // 600 = 600ms
@@ -141,7 +141,7 @@ namespace Tetris {
                 // Prüfe ob dies bereits beim ersten Durchlauf passierte. Wenn ja ist das Spiel zu Ende,
                 // das Level ist bis oben hin gefüllt
                 if (activeShape.iteration <= 0) {
-                    console.log('GAME OVER');
+                    console.log("GAME OVER");
 
                     // Erstelle neues leeres Level
                     createNewLevel();
@@ -150,7 +150,7 @@ namespace Tetris {
                     setActiveShape();
 
                     // starte spiel neu
-                    console.log('RESTART GAME');
+                    console.log("RESTART GAME");
                     ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
                     ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL);
 
@@ -179,11 +179,11 @@ namespace Tetris {
         if (!audioCmp.isPlaying) audioCmp.play(true);
 
         direction = ƒ.Keyboard.mapToValue(ƒ.Vector3.X(), ƒ.Vector3.ZERO(), [
-            ƒ.KEYBOARD_CODE.D,
+            ƒ.KEYBOARD_CODE.D
         ]);
         direction.add(
             ƒ.Keyboard.mapToValue(ƒ.Vector3.X(-1), ƒ.Vector3.ZERO(), [
-                ƒ.KEYBOARD_CODE.A,
+                ƒ.KEYBOARD_CODE.A
             ])
         );
 

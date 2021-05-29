@@ -5,16 +5,16 @@ namespace Tetris {
         public static staticUnit: number = 1.05;
         public unit: number = Shape.staticUnit;
 
-        private color: ƒ.Color = ƒ.Color.CSS('WHITE');
+        private color: ƒ.Color = ƒ.Color.CSS("WHITE");
         private container: ƒ.Node;
 
         constructor(startPos: ƒ.Vector3 = ƒ.Vector3.ZERO()) {
-            super('Shape');
+            super("Shape");
             startPos.scale(this.unit);
             this.addComponent(
                 new ƒ.ComponentTransform(ƒ.Matrix4x4.TRANSLATION(startPos))
             );
-            this.container = new ƒ.Node('Shape_Container');
+            this.container = new ƒ.Node("Shape_Container");
             this.container.addComponent(
                 new ƒ.ComponentTransform(
                     ƒ.Matrix4x4.TRANSLATION(ƒ.Vector3.ZERO())
@@ -57,7 +57,6 @@ namespace Tetris {
                 form.createQuad(
                     new ƒ.Vector3(0, form.unit * len - form.unit, 0)
                 );
-            0;
             return form;
         }
 
@@ -68,7 +67,7 @@ namespace Tetris {
         /** Versuche Form um einen Schritt nach unten zu bewegen */
         public tryMoveY(colliders: Shape[]): boolean {
             // Kalkuliere Translation um eine Einheit nach unten
-            const downMtx = this.mtxLocal.copy;
+            const downMtx: ƒ.Matrix4x4 = this.mtxLocal.copy;
             downMtx.translateY(-this.unit);
 
             // speichere Rotation des Form-Containers
@@ -77,7 +76,7 @@ namespace Tetris {
             // Iteriere über jedes Segment einer Form und simuliere eine Translaton nach unten (Weltkoordinatensystem)
             for (const segment of this.container.getChildren()) {
                 // Erstelle Matrixkopie des Segments
-                const segmentMtx = segment.mtxWorld.copy;
+                const segmentMtx: ƒ.Matrix4x4 = segment.mtxWorld.copy;
 
                 // Prüfe andhand der Container-Rotation in welche Richtung das Segment bewegt werden muss.
                 // Führe daraufhin die Translation durch. (Funktioniert da immer in 90 Grad Schritten gedreht wird :D)
@@ -135,42 +134,42 @@ namespace Tetris {
         }
 
         private createLN(): void {
-            this.color = ƒ.Color.CSS('CYAN');
+            this.color = ƒ.Color.CSS("CYAN");
             this.createLine(4, ƒ.Vector3.ZERO());
         }
 
         private createLL(): void {
-            this.color = ƒ.Color.CSS('MAGENTA');
+            this.color = ƒ.Color.CSS("MAGENTA");
             this.createLine(3);
             this.createQuad(new ƒ.Vector3(-this.unit, this.unit, 0));
         }
 
         private createLR(): void {
-            this.color = ƒ.Color.CSS('YELLOW');
+            this.color = ƒ.Color.CSS("YELLOW");
             this.createLine(3);
             this.createQuad(new ƒ.Vector3(this.unit, this.unit, 0));
         }
 
         private createZL(): void {
-            this.color = ƒ.Color.CSS('RED');
+            this.color = ƒ.Color.CSS("RED");
             this.createLine(2, new ƒ.Vector3(this.unit, 0, 0));
             this.createLine(2, new ƒ.Vector3(0, 0 + this.unit, 0));
         }
 
         private createZR(): void {
-            this.color = ƒ.Color.CSS('GREEN');
+            this.color = ƒ.Color.CSS("GREEN");
             this.createLine(2);
             this.createLine(2, new ƒ.Vector3(this.unit, 0 + this.unit, 0));
         }
 
         private createSQ(): void {
-            this.color = ƒ.Color.CSS('BLUE');
+            this.color = ƒ.Color.CSS("BLUE");
             this.createLine(2);
             this.createLine(2, new ƒ.Vector3(0, this.unit, 0));
         }
 
         private createTT(): void {
-            this.color = ƒ.Color.CSS('ORANGE');
+            this.color = ƒ.Color.CSS("ORANGE");
             this.createLine(3);
             this.createQuad(new ƒ.Vector3(0, 0 + this.unit, 0));
         }
@@ -178,11 +177,11 @@ namespace Tetris {
         private createQuad(pos: ƒ.Vector3): void {
             let mesh: ƒ.MeshQuad = new ƒ.MeshQuad();
             let material: ƒ.Material = new ƒ.Material(
-                'Solid' + this.color.getCSS(),
+                "Solid" + this.color.getCSS(),
                 ƒ.ShaderUniColor,
                 new ƒ.CoatColored(this.color)
             );
-            let segment: ƒ.Node = new ƒ.Node('Segment');
+            let segment: ƒ.Node = new ƒ.Node("Segment");
             let cmpMesh: ƒ.ComponentMesh = new ƒ.ComponentMesh(mesh);
             segment.addComponent(cmpMesh);
             let cmpMaterial: ƒ.ComponentMaterial = new ƒ.ComponentMaterial(

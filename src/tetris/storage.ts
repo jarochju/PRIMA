@@ -16,14 +16,14 @@ namespace Tetris {
             this.data = {
                 gameInterval: 600,
                 musicVolume: 0.6,
-                sfxVolume: 0.4,
+                sfxVolume: 0.4
             };
         }
 
         public async loadData(): Promise<void> {
-            const response = await fetch(this.path);
-            const result = await response.json();
-            this.data = result as Data;
+            const response: Response = await fetch(this.path);
+            const result: Data = await response.json();
+            this.data = result;
         }
 
         public getData(): Data {

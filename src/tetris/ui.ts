@@ -12,21 +12,6 @@ namespace Tetris {
             this._element = document.querySelector(id);
         }
 
-        public setValue(value: T): void {
-            if (value !== undefined) {
-                const prev = this._value;
-                this._value = value;
-
-                if (this._element) {
-                    this._element.innerHTML = value.toString();
-                    const event = new CustomEvent<UIEvent<T>>('change', {
-                        detail: { newValue: this._value, prev: prev },
-                    });
-                    this._element.dispatchEvent(event);
-                }
-            }
-        }
-
         public get value(): T {
             return this._value;
         }
@@ -34,5 +19,22 @@ namespace Tetris {
         public get element(): HTMLElement {
             return this._element;
         }
+
+        public setValue(value: T): void {
+            if (value !== undefined) {
+                const prev: T = this._value;
+                this._value = value;
+
+                if (this._element) {
+                    this._element.innerHTML = value.toString();
+                    const event: CustomEvent<UIEvent<T>> = new CustomEvent<UIEvent<T>>("change", {
+                        detail: { newValue: this._value, prev: prev }
+                    });
+                    this._element.dispatchEvent(event);
+                }
+            }
+        }
+
+
     }
 }
