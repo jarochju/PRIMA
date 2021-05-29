@@ -1,0 +1,20 @@
+{
+    "name": "prima",
+    "version": "0.0.1",
+    "main": "index.js",
+    "repository": "https://github.com/jarochju/PRIMA.git",
+    "author": "Julia Jaroch <julia.jaroch@hs-furtwangen.de>",
+    "license": "MIT",
+    "scripts": {
+        "build": "tsc",
+        "tc": "tsc --noEmit",
+        "watch": "tsc --watch",
+        "serve": "browser-sync start  --server --directory --files *"
+    },
+    "dependencies": {
+        "typescript": "^4.2.4"
+    },
+    "devDependencies": {
+        "browser-sync": "^2.26.14"
+    }
+}
