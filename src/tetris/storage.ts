@@ -1,6 +1,16 @@
 namespace Tetris {
     export interface Data {
-        gameInterval: number;
+        difficulties: {
+            easy: {
+                gameInterval: number;
+            };
+            medium: {
+                gameInterval: number;
+            };
+            hard: {
+                gameInterval: number;
+            };
+        };
         musicVolume: number;
         sfxVolume: number;
     }
@@ -14,16 +24,26 @@ namespace Tetris {
 
             // setze Standardwerte
             this.data = {
-                gameInterval: 600,
+                difficulties: {
+                    easy: {
+                        gameInterval: 600,
+                    },
+                    medium: {
+                        gameInterval: 600,
+                    },
+                    hard: {
+                        gameInterval: 600,
+                    },
+                },
                 musicVolume: 0.6,
-                sfxVolume: 0.4
+                sfxVolume: 0.4,
             };
         }
 
         public async loadData(): Promise<void> {
-            const response: Response = await fetch(this.path);
-            const result: Data = await response.json();
-            this.data = result;
+            const response = await fetch(this.path);
+            const result = await response.json();
+            this.data = result as Data;
         }
 
         public getData(): Data {

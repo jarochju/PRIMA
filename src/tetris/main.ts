@@ -17,7 +17,15 @@ namespace Tetris {
         round: number;
     }
 
-    window.addEventListener("load", hndLoad);
+    enum GameState {
+        RUNNING,
+        PAUSED,
+        STOPPED,
+    }
+
+    type GameDifficulty = 'easy' | 'medium' | 'hard';
+
+    window.addEventListener('load', hndLoad);
     export let viewport: ƒ.Viewport;
     let graph: ƒ.Node;
     let activeShape: ActiveShape;
@@ -26,36 +34,60 @@ namespace Tetris {
 
     let audioCmp: ƒ.ComponentAudio;
     let bgMusic: ƒ.Audio;
-    let speed: number;
+    let isMuted: boolean = false;
 
     let counterUI: UIElement<number>;
 
     let level: Level;
-    async function hndLoad(_event: Event): Promise<void> {
-        const canvas: HTMLCanvasElement = document.querySelector("canvas");
-        counterUI = new UIElement<number>("#counter");
+    let gameState: GameState = GameState.STOPPED;
+    let gameData: Data;
+    let gameDifficulty: GameDifficulty = 'medium';
 
-        const storage: Storage = new Storage("./data.json");
+    async function hndLoad(_event: Event): Promise<void> {
+        const canvas: HTMLCanvasElement = document.querySelector('canvas');
+
+        /** Control DOM Elements */
+        const startBtn: HTMLButtonElement =
+            document.querySelector('#start-btn');
+
+        const newGameBtn: HTMLButtonElement =
+            document.querySelector('#new-game-btn');
+
+        const muteBtn: HTMLButtonElement = document.querySelector('#mute-btn');
+
+        const difficultySelect: HTMLSelectElement =
+            document.querySelector('#difficulty-select');
+
+        counterUI = new UIElement<number>('#counter');
+
+        if (newGameBtn) newGameBtn.addEventListener('click', handleStartClick);
+        if (startBtn) startBtn.addEventListener('click', handlePauseClick);
+        if (muteBtn) muteBtn.addEventListener('click', handleMuteClick);
+        if (difficultySelect) {
+            difficultySelect.value = 'medium';
+            difficultySelect.addEventListener('change', handleDifficultyChange);
+        }
+
+        const storage = new Storage('./data.json');
         await storage.loadData();
-        const { gameInterval } = storage.getData();
-        speed = gameInterval;
+        gameData = storage.getData();
 
         // setze Werte der Benutzeroberfläche
         counterUI.setValue(0);
         /*
-        counterUI.element.addEventListener("change", ((e: CustomEvent) => {
+        counterUI.element.addEventListener('change', ((e: CustomEvent) => {
             console.log(e.detail);
         }) as EventListener);
         */
 
-        // erstelle Level
-        createNewLevel();
-
         // erstelle Audio
-        bgMusic = new ƒ.Audio("sounds/tetrisMusic.mp3");
+        bgMusic = new ƒ.Audio('sounds/tetrisMusic.mp3');
         audioCmp = new ƒ.ComponentAudio(bgMusic, true, false);
         audioCmp.connect(true);
         audioCmp.volume = 0.8;
+
+        // Erstelle neues leeres Level
+        createNewLevel();
 
         // erstelle Kamera
         const cmpCamera: ƒ.ComponentCamera = new ƒ.ComponentCamera();
@@ -64,26 +96,98 @@ namespace Tetris {
 
         // erstelle Viewport und initialisiere Szene
         viewport = new ƒ.Viewport();
-        viewport.initialize("Viewport", graph, cmpCamera, canvas);
+        viewport.initialize('Viewport', graph, cmpCamera, canvas);
+        viewport.draw();
+    }
 
+    function handleStartClick() {
+        startGame();
+    }
+
+    function handlePauseClick(ev: MouseEvent) {
+        const pauseBtn = ev.target as HTMLButtonElement;
+
+        switch (gameState) {
+            case GameState.RUNNING: {
+                pauseGame();
+                pauseBtn.innerText = 'Resume';
+                break;
+            }
+
+            case GameState.PAUSED: {
+                resumeGame();
+                pauseBtn.innerText = 'Pause';
+                break;
+            }
+        }
+    }
+
+    function handleMuteClick(ev: MouseEvent) {
+        const muteBtn = ev.target as HTMLButtonElement;
+
+        if (isMuted) {
+            isMuted = false;
+            audioCmp.volume = 1;
+            muteBtn.classList.remove('controls__button--start');
+            muteBtn.innerText = 'Turn Off';
+        } else {
+            isMuted = true;
+            audioCmp.volume = 0;
+            muteBtn.classList.add('controls__button--start');
+            muteBtn.innerText = 'Turn On';
+        }
+    }
+
+    function handleDifficultyChange(ev: Event) {
+        const value = (ev.target as HTMLSelectElement).value as GameDifficulty;
+        gameDifficulty = value;
+    }
+
+    function startGame() {
         // STARTE SPIEL
+        if (!audioCmp.isPlaying) audioCmp.play(true);
+
+        // Erstelle neues leeres Level
+        createNewLevel();
+
         // erstelle erste aktive Form
         setActiveShape();
 
         // setze input event listener
-        document.addEventListener("keypress", control);
+        document.addEventListener('keypress', control);
 
         // starte game loop
-        console.log("START GAME");
+        console.log('START GAME');
+        gameState = GameState.RUNNING;
         ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
         ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL);
     }
 
-    function createNewLevel(): void {
+    function pauseGame() {
+        if (gameState === GameState.RUNNING) {
+            if (audioCmp.isPlaying) audioCmp.play(false);
+            ƒ.Loop.stop();
+            document.removeEventListener('keypress', control);
+            gameState = GameState.PAUSED;
+        }
+    }
+
+    function resumeGame() {
+        if (gameState === GameState.PAUSED) {
+            document.addEventListener('keypress', control);
+
+            if (!audioCmp.isPlaying) audioCmp.play(true);
+            ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
+            ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL);
+            gameState = GameState.RUNNING;
+        }
+    }
+
+    function createNewLevel() {
         ƒ.Loop.stop();
 
         // erstelle Szenengraph (Wurzelknoten) wenn nötig
-        if (!graph) graph = new ƒ.Node("Graph");
+        if (!graph) graph = new ƒ.Node('Graph');
 
         // Lösche alle Kindknoten des Graphs
         graph.removeAllChildren();
@@ -94,7 +198,7 @@ namespace Tetris {
                 floor: Shape.floor(15, new ƒ.Vector3(-6, -11, 0)),
                 leftWall: Shape.wall(23, new ƒ.Vector3(-8, -10, 0)),
                 rightWall: Shape.wall(23, new ƒ.Vector3(8, -10, 0)),
-                round: 0
+                round: 0,
             };
         } else {
             level.round += 1;
@@ -112,14 +216,14 @@ namespace Tetris {
         colliders.push(level.rightWall);
     }
 
-    function setActiveShape(shape?: Shape): void {
+    function setActiveShape(shape?: Shape) {
         // erstelle Szenengraph (Wurzelknoten) wenn nötig
-        if (!graph) graph = new ƒ.Node("Graph");
+        if (!graph) graph = new ƒ.Node('Graph');
 
         // setze neue aktive Form
         activeShape = {
             form: shape || Shape.random(),
-            iteration: 0
+            iteration: 0,
         };
 
         // füge Form zum Szenengraph hinzu
@@ -128,11 +232,12 @@ namespace Tetris {
 
     function update(_event: ƒ.Eventƒ): void {
         // ermittle zeitlich Differenz zum letzten Update
-        const delta: number = Date.now() - lastUpdate;
+        const delta = Date.now() - lastUpdate;
+        const gameInterval = gameData.difficulties[gameDifficulty].gameInterval;
 
         // teste of genug Zeit vergangen ist um das nächste Update zu starten
         // 600 = 600ms
-        if (delta > speed) {
+        if (delta > gameInterval) {
             lastUpdate = Date.now();
 
             // Versuche Form nach unten zu bewegen
@@ -141,18 +246,12 @@ namespace Tetris {
                 // Prüfe ob dies bereits beim ersten Durchlauf passierte. Wenn ja ist das Spiel zu Ende,
                 // das Level ist bis oben hin gefüllt
                 if (activeShape.iteration <= 0) {
-                    console.log("GAME OVER");
-
-                    // Erstelle neues leeres Level
-                    createNewLevel();
-
-                    // setze neue Form
-                    setActiveShape();
+                    console.log('GAME OVER');
+                    gameState = GameState.STOPPED;
 
                     // starte spiel neu
-                    console.log("RESTART GAME");
-                    ƒ.Loop.addEventListener(ƒ.EVENT.LOOP_FRAME, update);
-                    ƒ.Loop.start(ƒ.LOOP_MODE.TIME_REAL);
+                    console.log('RESTART GAME');
+                    startGame();
 
                     return;
                 }
@@ -175,15 +274,12 @@ namespace Tetris {
         let direction: ƒ.Vector3;
         let rotation: number;
 
-        // Temporärer Einstieg der Musik. Browser benötigt Nutzerinteraktion bevor er Musik starten kann
-        if (!audioCmp.isPlaying) audioCmp.play(true);
-
         direction = ƒ.Keyboard.mapToValue(ƒ.Vector3.X(), ƒ.Vector3.ZERO(), [
-            ƒ.KEYBOARD_CODE.D
+            ƒ.KEYBOARD_CODE.D,
         ]);
         direction.add(
             ƒ.Keyboard.mapToValue(ƒ.Vector3.X(-1), ƒ.Vector3.ZERO(), [
-                ƒ.KEYBOARD_CODE.A
+                ƒ.KEYBOARD_CODE.A,
             ])
         );
 

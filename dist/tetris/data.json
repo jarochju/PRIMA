@@ -1,5 +1,15 @@
 {
-    "gameInterval": 150,
+    "difficulties": {
+        "easy": {
+            "gameInterval": 400
+        },
+        "medium": {
+            "gameInterval": 150
+        },
+        "hard": {
+            "gameInterval": 90
+        }
+    },
     "musicVolume": 0.6,
     "sfxVolume": 0.4
 }

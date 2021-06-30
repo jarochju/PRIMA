@@ -5,16 +5,69 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge" />
         <title>Tetris</title>
+        <link rel="stylesheet" type="text/css" href="./styles.css" />
         <script src="../../FUDGE/Core/FudgeCore.js"></script>
         <script src="../../FUDGE/UserInterface/FudgeUserInterface.js"></script>
         <script src="storage.js"></script>
         <script src="ui.js"></script>
         <script src="main.js"></script>
         <script src="shape.js"></script>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap"
+            rel="stylesheet"
+        />
     </head>
     <body>
-        <h1>Tetris</h1>
-        <canvas width="600" height="800"></canvas>
-        <div id="counter"></div>
+        <div class="layout">
+            <canvas class="canvas" width="600" height="800"></canvas>
+            <div class="controls">
+                <h1 class="controls__title">Tetris Remastered</h1>
+                <div>
+                    <button
+                        id="start-btn"
+                        class="controls__button controls__button--pause"
+                    >
+                        Pause
+                    </button>
+                    <button
+                        id="new-game-btn"
+                        class="controls__button controls__button--start"
+                    >
+                        New Game
+                    </button>
+                </div>
+                <div>
+                    <h2 class="controls__title controls__title--h2">
+                        Difficulty
+                    </h2>
+                    <div class="select-dropdown">
+                        <select
+                            name="difficulty"
+                            id="difficulty-select"
+                            class="select-dropdown__select"
+                        >
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <h2 class="controls__title controls__title--h2">Round</h2>
+                    <div id="counter"></div>
+                </div>
+                <div>
+                    <h2 class="controls__title controls__title--h2">Music</h2>
+                    <button
+                        id="mute-btn"
+                        class="controls__button controls__button"
+                    >
+                        Turn Off
+                    </button>
+                </div>
+            </div>
+        </div>
     </body>
 </html>

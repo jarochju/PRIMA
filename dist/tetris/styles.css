@@ -1,0 +1,113 @@
+body {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 25px;
+    font-weight: normal;
+}
+
+.layout {
+    display: flex;
+    flex-direction: row;
+    padding: 20px;
+}
+
+.layout > * {
+    flex: 1;
+}
+
+.canvas {
+    flex: 0 1 20%;
+}
+
+.controls {
+    padding: 0 20px;
+}
+
+.controls > * + * {
+    margin-top: 40px;
+}
+
+.controls__title {
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 50px;
+    text-transform: uppercase;
+}
+
+.controls__title--h2 {
+    font-size: 30px;
+}
+
+.controls__button {
+    display: inline-block;
+    height: 45px;
+    min-width: 100px;
+
+    margin: 0;
+    padding: 0 20px;
+    border: 0;
+    background: gray;
+    outline: 0;
+
+    font-family: 'Bebas Neue', cursive;
+    font-size: 25px;
+    color: white;
+    cursor: pointer;
+
+    transition: transform 0.1s ease-in-out;
+}
+
+.controls__button:hover {
+    transform: scale(1.05);
+}
+
+.controls__button--start {
+    background: #74c143;
+}
+
+.select-dropdown,
+.select-dropdown * {
+    margin: 0;
+    padding: 0;
+    position: relative;
+    box-sizing: border-box;
+
+    font-size: 20px;
+    font-weight: normal;
+}
+
+.select-dropdown {
+    position: relative;
+    background-color: #e6e6e6;
+}
+
+.select-dropdown__select {
+    max-width: 100%;
+    width: 100%;
+    padding: 8px 24px 8px 10px;
+    border: none;
+    background-color: transparent;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+}
+
+.select-dropdown__select:active,
+.select-dropdown__select:focus {
+    outline: none;
+    box-shadow: none;
+}
+
+.select-dropdown:after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: 8px;
+    width: 0;
+    height: 0;
+    margin-top: -2px;
+    border-top: 5px solid #aaa;
+    border-right: 5px solid transparent;
+    border-left: 5px solid transparent;
+}
