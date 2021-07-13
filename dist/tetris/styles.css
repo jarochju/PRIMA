@@ -14,12 +14,42 @@ body {
     flex: 1;
 }
 
-.canvas {
+.canvas-wrapper {
     flex: 0 1 20%;
+    position: relative;
+}
+
+.canvas {
+}
+
+.modal {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    text-align: center;
+    font-size: 100px;
+    max-height: 800px;
+}
+
+.modal > * {
+    transform: translateY(-20%);
+    user-select: none;
+}
+
+.modal--visible {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .controls {
     padding: 0 20px;
+    max-width: 350px;
 }
 
 .controls > * + * {
@@ -64,6 +94,10 @@ body {
 
 .controls__button--start {
     background: #74c143;
+}
+
+.controls__table td {
+    padding-right: 15px;
 }
 
 .select-dropdown,
