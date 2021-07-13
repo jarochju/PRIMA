@@ -1,6 +1,6 @@
 {
     "name": "prima",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "main": "index.js",
     "repository": "https://github.com/jarochju/PRIMA.git",
     "author": "Julia Jaroch <julia.jaroch@hs-furtwangen.de>",
